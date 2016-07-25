@@ -1,6 +1,5 @@
 'use strict';
 
-jest.unmock('bluebird');
 jest.unmock('../../lib/utils');
 
 const {createPromiseCallback} = require('../../lib/utils');
