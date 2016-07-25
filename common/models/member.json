@@ -1,0 +1,67 @@
+{
+  "name": "Member",
+  "base": "PersistedModel",
+  "idInjection": false,
+  "options": {
+    "validateUpsert": true,
+    "mysql": { "table": "uc_members" }
+  },
+  "properties": {
+    "uid": {
+      "type": "Number",
+      "required": true,
+      "id": true
+    },
+    "username": {
+      "type": "String",
+      "required": true
+    },
+    "password": {
+      "type": "String",
+      "required": true
+    },
+    "email": {
+      "type": "String"
+    },
+    "myid": {
+      "type": "String"
+    },
+    "myidkey": {
+      "type": "String"
+    },
+    "regip": {
+      "type": "String"
+    },
+    "regdate": {
+      "type": "Number",
+      "required": true
+    },
+    "lastloginip": {
+      "type": "String"
+    },
+    "lastlogintime": {
+      "type": "Number"
+    },
+    "salt": {
+      "type": "String"
+    },
+    "secques": {
+      "type": "String"
+    }
+  },
+  "hidden": ["password"],
+  "validations": [],
+  "relations": {},
+  "acls": [
+    {
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "DENY"
+    }, {
+      "principalType": "ROLE",
+      "principalId": "$everyone",
+      "permission": "ALLOW",
+      "property": "login"
+    }
+  ]
+}
