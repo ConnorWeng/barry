@@ -8,10 +8,30 @@ describe('Member', () => {
   let member;
 
   class Member {
-    constructor() {}
+    constructor() {
+      this.accessTokens = {
+        create: (options, callback) => {
+          callback(null, {});
+        },
+      };
+    }
     remoteMethod() {}
     findOne(query, callback) {
-      callback(null, {username: 'foo', password: 'bar', salt: 'salt'});
+      callback(null, {
+        username: query.where.username,
+        password: query.where.password,
+        salt: 'salt',
+        accessTokens: {
+          create: (options, callback) => {
+            callback(null, {
+              id: 'access_token_id',
+              __data: {
+                user: {},
+              },
+            });
+          },
+        },
+      });
     }
   };
 
@@ -24,10 +44,9 @@ describe('Member', () => {
     it('should return an access token ' +
        'if correct username and password are given', (done) => {
       member.hasPassword = () => { return true; };
-      member.login({username: 'foo', password: 'bar'}, (err, member) => {
-        expect(member).toEqual({
-          username: 'foo', password: 'bar', salt: 'salt',
-        });
+      member.login({username: 'foo', password: 'bar'}, (err, token) => {
+        expect(token.__data.user.username).toBe('foo');
+        expect(token.id).toBe('access_token_id');
         done();
       });
     });

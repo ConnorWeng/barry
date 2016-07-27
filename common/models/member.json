@@ -4,13 +4,21 @@
   "idInjection": false,
   "options": {
     "validateUpsert": true,
-    "mysql": { "table": "uc_members" }
+    "mysql": {
+      "table": "uc_members"
+    }
   },
+  "hidden": [
+    "password"
+  ],
   "properties": {
-    "uid": {
+    "userId": {
       "type": "Number",
+      "id": true,
       "required": true,
-      "id": true
+      "mysql": {
+        "columnName": "uid"
+      }
     },
     "username": {
       "type": "String",
@@ -49,19 +57,30 @@
       "type": "String"
     }
   },
-  "hidden": ["password"],
-  "validations": [],
-  "relations": {},
+  "relations": {
+    "accessTokens": {
+      "type": "hasMany",
+      "model": "AccessToken",
+      "foreignKey": "userId"
+    }
+  },
   "acls": [
     {
       "principalType": "ROLE",
       "principalId": "$everyone",
       "permission": "DENY"
-    }, {
+    },
+    {
       "principalType": "ROLE",
       "principalId": "$everyone",
       "permission": "ALLOW",
       "property": "login"
+    },
+    {
+      "principalType": "ROLE",
+      "principalId": "$owner",
+      "permission": "ALLOW",
+      "property": "findById"
     }
   ]
 }

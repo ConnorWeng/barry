@@ -4,6 +4,8 @@ const crypto = require('crypto');
 const debug = require('debug')('barry:member');
 const utils = require('../../lib/utils');
 
+const DEFAULT_TTL = 1209600; // 2 weeks in seconds
+
 module.exports = (Member) => {
   /**
    * Login a member with the given `credentials`.
@@ -28,13 +30,20 @@ module.exports = (Member) => {
       const defaultError = new Error('login failed');
       defaultError.statusCode = 401;
       defaultError.code = 'LOGIN_FAILED';
+
+      function tokenHandler(err, token) {
+        if (err) return callback(err);
+        token.__data.user = member;
+        return callback(err, token);
+      }
+
       if (err) {
         debug('An error is reported from Member.findOne: %j', err);
         callback(defaultError);
       } else if (member) {
         if (Member
             .hasPassword(credentials.password, member.password, member.salt)) {
-          callback(null, member);
+          member.accessTokens.create({ttl: DEFAULT_TTL}, tokenHandler);
         } else {
           debug('The password is invalid for member %s',
             query.email || query.username);
