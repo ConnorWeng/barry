@@ -19,9 +19,9 @@ module.exports = (Member) => {
   Member.login = (credentials, callback = utils.createPromiseCallback()) => {
     const query = Member.normalizeCredentials(credentials);
     if (!query.email && !query.username) {
-      const err = new Error('username or email is required');
+      const err = new Error('username is required');
       err.statusCode = 400;
-      err.code = 'USERNAME_EMAIL_REQUIRED';
+      err.code = 'USERNAME_REQUIRED';
       callback(err);
       return callback.promise;
     }
@@ -45,10 +45,12 @@ module.exports = (Member) => {
             .hasPassword(credentials.password, member.password, member.salt)) {
           member.accessTokens.create({ttl: DEFAULT_TTL}, tokenHandler);
         } else {
-          debug('The password is invalid for member %s',
-            query.email || query.username);
+          debug('The password is invalid for member %s', query.username);
           callback(defaultError);
         }
+      } else {
+        debug('member %s not found', query.username);
+        callback(defaultError);
       }
     });
 
